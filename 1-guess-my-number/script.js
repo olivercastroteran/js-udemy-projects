@@ -1,35 +1,50 @@
 'use strict';
 
+const body = document.querySelector('body');
+const scoreNum = document.querySelector('.score');
 const msg = document.querySelector('.message');
 const checkBtn = document.querySelector('.check');
+const resetBtn = document.querySelector('.again');
+const num = document.querySelector('.number');
+const guessNum = document.querySelector('.guess');
 
-const num = Math.trunc(Math.random() * 20) + 1;
-const secretNumber = (document.querySelector('.number').textContent = num);
-let score = 20;
+let score, secretNumber;
+let highScore = 0;
+
+const startNewGame = () => {
+  score = 20;
+  secretNumber = Math.trunc(Math.random() * 20) + 1;
+  msg.textContent = 'Start guessing...';
+  num.textContent = '?';
+  guessNum.value = '';
+  scoreNum.textContent = score;
+  body.style.backgroundColor = '#222';
+  num.style.backgroundColor = '#eee';
+  return;
+};
 
 checkBtn.addEventListener('click', () => {
-  const guess = +document.querySelector('.guess').value;
+  const guess = +guessNum.value;
   if (!guess) {
     msg.textContent = '⛔ No number!';
   } else if (guess === secretNumber) {
     msg.textContent = '🎉 Correct Number!';
-  } else if (guess > secretNumber) {
+    num.textContent = secretNumber;
+    if (score > highScore) highScore = score;
+    document.querySelector('.highscore').textContent = highScore;
+    body.style.backgroundColor = '#60b347';
+    num.style.backgroundColor = '#fff';
+  } else {
     if (score > 1) {
-      msg.textContent = '📈 Too high';
+      msg.textContent = guess > secretNumber ? '📈 Too high' : '📉 Too low';
       score--;
-      document.querySelector('.score').textContent = score;
+      scoreNum.textContent = score;
     } else {
       msg.textContent = '💩 You lost the game!';
-      document.querySelector('.score').textContent = 0;
-    }
-  } else if (guess < secretNumber) {
-    if (score > 1) {
-      msg.textContent = '📉 Too low';
-      score--;
-      document.querySelector('.score').textContent = score;
-    } else {
-      msg.textContent = '💩 You lost the game!';
-      document.querySelector('.score').textContent = 0;
+      scoreNum.textContent = 0;
     }
   }
 });
+
+resetBtn.addEventListener('click', startNewGame);
+window.addEventListener('load', startNewGame);
